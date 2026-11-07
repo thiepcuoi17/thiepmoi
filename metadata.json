@@ -1,0 +1,6 @@
+{
+  "name": "Quốc Anh & Hải Anh - Thiệp Cưới & Chỉ Đường",
+  "description": "Website thiệp cưới sang trọng và chỉ đường lễ cưới dành cho khách mời của chú rể Quốc Anh & cô dâu Hải Anh. Ngày cưới: 14/12/2026.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
