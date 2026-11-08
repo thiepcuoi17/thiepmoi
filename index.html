@@ -872,15 +872,20 @@
 
       const progressBar = document.getElementById('goldScrollProgress');
       const floatingDock = document.getElementById('floatingNavDock');
+      const pageFooter = document.querySelector('footer');
 
-      window.addEventListener('scroll', () => {
+      const updateScrollUI = () => {
         const scrollTop = window.scrollY;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = (scrollTop / docHeight) * 100;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
         if (progressBar) progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
 
+        // Ẩn dock ngay khi phần đầu Footer đi vào vùng nhìn thấy.
+        const footerReached = pageFooter && pageFooter.getBoundingClientRect().top <= window.innerHeight;
+        const shouldShowDock = scrollTop > 280 && !footerReached;
+
         if (floatingDock) {
-          if (scrollTop > 280) {
+          if (shouldShowDock) {
             floatingDock.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-6');
             floatingDock.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
           } else {
@@ -888,7 +893,11 @@
             floatingDock.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
           }
         }
-      }, { passive: true });
+      };
+
+      window.addEventListener('scroll', updateScrollUI, { passive: true });
+      window.addEventListener('resize', updateScrollUI);
+      updateScrollUI();
 
       // 3D Tilt for Venue Cards
       ['cardGroom', 'cardBride'].forEach(id => {
