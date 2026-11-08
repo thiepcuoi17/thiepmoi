@@ -65,6 +65,9 @@
 <script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
 <body class="bg-[#FAF8F5] text-[#1C1E21] antialiased selection:bg-[#D4AF37] selection:text-[#1A180E] relative">
 
+  <!-- Nhạc nền thiệp cưới: đặt nhaccuoi.mp3 cùng thư mục với index.html -->
+  <audio id="weddingMusic" src="nhaccuoi.mp3" preload="auto" loop playsinline></audio>
+
   <!-- Top Smooth Golden Scroll Progress Bar -->
   <div id="goldScrollProgress" class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-[#D4AF37] via-[#F5E5C0] to-[#C59B27] z-50 transition-all duration-150 origin-left shadow-[0_0_8px_rgba(212,175,55,0.6)]" style="width: 0%;"></div>
 
@@ -688,9 +691,22 @@
       } catch (e) {}
     }
 
+    // Phát nhạc nền sau thao tác chạm của khách (trình duyệt yêu cầu tương tác người dùng)
+    function startWeddingMusic() {
+      const music = document.getElementById("weddingMusic");
+      if (!music) return;
+      music.loop = true;
+      const playPromise = music.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(error => {
+          console.warn("Không thể phát nhạc nền. Hãy kiểm tra file nhaccuoi.mp3:", error);
+        });
+      }
+    }
+
     // Royal Envelope Ceremony
     function openRoyalEnvelope() {
-      playRoyalChime();
+      startWeddingMusic();
       fireConfetti();
       const modal = document.getElementById("envelopeModal");
       const card = modal.querySelector("div");
@@ -703,6 +719,7 @@
     }
 
     function dismissEnvelope() {
+      startWeddingMusic();
       const modal = document.getElementById("envelopeModal");
       modal.classList.add("hidden");
     }
