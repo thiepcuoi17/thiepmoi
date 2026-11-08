@@ -223,7 +223,7 @@
         <div class="py-2">
           <div class="inline-flex items-center gap-4 text-center">
             <div class="text-right">
-              <span class="block text-xs uppercase tracking-wider text-[#737C84]">Thứ Hai</span>
+              <span class="block text-xs uppercase tracking-wider text-[#737C84]">Thứ Năm</span>
               <span class="text-sm font-semibold text-[#1C1E21]">17 Tháng 12</span>
             </div>
             <div class="w-px h-10 bg-[#D4AF37]/60"></div>
@@ -469,7 +469,7 @@
       <div class="text-center max-w-xl mx-auto mb-12">
         <p class="text-xs uppercase tracking-[0.25em] text-[#9B7829] font-bold mb-2">CHƯƠNG TRÌNH HÔN LỄ</p>
         <h2 class="font-serif-luxury text-3xl sm:text-5xl font-medium text-[#1C1E21]">Lịch Trình Ngày Cưới</h2>
-        <p class="text-sm text-[#525B62] mt-1">Thứ Hai, ngày 17 tháng 12 năm 2026</p>
+        <p class="text-sm text-[#525B62] mt-1">Thứ Năm, ngày 17 tháng 12 năm 2026</p>
       </div>
 
       <div class="space-y-6">
@@ -479,7 +479,7 @@
             <span class="ml-2 text-xs font-semibold text-[#1C1E21]">Nhà Trai xuất phát rước dâu</span>
             <p class="text-xs text-[#525B62] mt-1">Đoàn đại biểu họ Nhà Trai xuất phát sang tư gia họ Nhà Gái.</p>
           </div>
-          <span class="text-xs px-2.5 py-1 bg-[#FAF8F5] text-[#9B7829] border border-[#D4AF37]/50 rounded font-medium">Lễ Xuất Phát</span>
+
         </div>
 
         <div class="bg-[#FFFDF9] border border-[#E8DFD0] p-5 rounded-sm shadow-xs flex items-center justify-between">
@@ -942,5 +942,328 @@
       document.getElementById("qrModal").classList.add("hidden");
     }
   </script>
+  
+<!-- QUỐC ANH & HẢI ANH - SỔ LƯU BÚT -->
+<section id="realGuestbook" class="real-guestbook">
+  <div class="guestbook-inner">
+    <div class="guestbook-heading">
+      <span class="guestbook-subtitle">A MESSAGE OF LOVE</span>
+      <h2>Ký Tên Vào Sổ Lưu Bút</h2>
+      <p>Hãy để lại những lời chúc tốt đẹp dành cho Quốc Anh & Hải Anh.</p>
+    </div>
+
+    <form id="guestbookForm">
+      <label for="guestName">Họ và tên</label>
+      <input
+        id="guestName"
+        name="name"
+        type="text"
+        maxlength="80"
+        placeholder="Nhập họ và tên của bạn"
+        required
+      >
+
+      <label for="guestMessage">Lời chúc</label>
+      <textarea
+        id="guestMessage"
+        name="message"
+        maxlength="1000"
+        rows="4"
+        placeholder="Viết lời chúc dành cho cô dâu và chú rể..."
+        required
+      ></textarea>
+
+      <!-- Ô chống spam tự động -->
+      <input
+        type="text"
+        id="guestWebsite"
+        tabindex="-1"
+        autocomplete="off"
+        style="position:absolute;left:-9999px"
+        aria-hidden="true"
+      >
+
+      <button type="submit" id="guestSubmit">
+        GỬI LỜI CHÚC
+      </button>
+
+      <p id="guestStatus" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="guestbook-divider"></div>
+
+    <h3>Những lời chúc yêu thương</h3>
+    <div id="approvedWishes">
+      <p class="guestbook-loading">Đang tải lời chúc...</p>
+    </div>
+  </div>
+</section>
+
+<style>
+.real-guestbook {
+  padding: 65px 20px;
+  background: #f8f2e9;
+  color: #54202b;
+}
+
+.guestbook-inner {
+  max-width: 720px;
+  margin: auto;
+}
+
+.guestbook-heading {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.guestbook-subtitle {
+  color: #b18b4d;
+  letter-spacing: 4px;
+  font-size: 11px;
+}
+
+.guestbook-heading h2 {
+  font-family: Georgia, serif;
+  font-size: clamp(27px, 5vw, 40px);
+  margin: 14px 0;
+}
+
+.guestbook-heading p {
+  color: #806c61;
+  line-height: 1.7;
+}
+
+#guestbookForm {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+#guestbookForm label {
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+#guestbookForm input:not([type="text"]),
+#guestbookForm input,
+#guestbookForm textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dfcfb8;
+  background: #fffdf9;
+  color: #54202b;
+  padding: 14px;
+  border-radius: 8px;
+  font: inherit;
+}
+
+#guestbookForm textarea {
+  resize: vertical;
+}
+
+#guestbookForm button {
+  margin-top: 12px;
+  padding: 15px;
+  background: #682c38;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+#guestbookForm button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+#guestStatus {
+  min-height: 22px;
+  text-align: center;
+  color: #806c61;
+  line-height: 1.6;
+}
+
+.guestbook-divider {
+  height: 1px;
+  background: #dfcfb8;
+  margin: 35px 0;
+}
+
+.guestbook-inner h3 {
+  text-align: center;
+  font-family: Georgia, serif;
+  font-size: 25px;
+  margin-bottom: 25px;
+}
+
+.guest-wish {
+  background: #fffdf9;
+  border: 1px solid #eadcc9;
+  border-radius: 10px;
+  padding: 19px;
+  margin-bottom: 14px;
+}
+
+.guest-wish-name {
+  color: #a17b42;
+  font-weight: bold;
+  margin-bottom: 9px;
+}
+
+.guest-wish-message {
+  color: #5e4b45;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.guestbook-loading,
+.guestbook-empty {
+  text-align: center;
+  color: #806c61;
+  padding: 20px;
+}
+</style>
+
+<script>
+(() => {
+  const API_URL = 'https://script.google.com/macros/s/AKfycbytBZnqkB0onDQTgispgXtfdUrMycYzg_uJdr8CYc-U3T-5eBmW4TbxJa2XpUpijbuS9A/exec';
+
+  const form = document.getElementById('guestbookForm');
+  const submitButton = document.getElementById('guestSubmit');
+  const statusBox = document.getElementById('guestStatus');
+  const wishesBox = document.getElementById('approvedWishes');
+
+  // Lấy lời chúc đã duyệt bằng JSONP.
+  function loadApprovedWishes() {
+    const callbackName =
+      'guestbookCallback_' + Date.now() + '_' +
+      Math.floor(Math.random() * 100000);
+
+    const script = document.createElement('script');
+    let finished = false;
+
+    window[callbackName] = function(data) {
+      finished = true;
+      delete window[callbackName];
+      script.remove();
+
+      if (!data || !data.success) {
+        wishesBox.textContent = 'Không thể tải lời chúc lúc này.';
+        return;
+      }
+
+      renderWishes(data.messages || []);
+    };
+
+    script.onerror = function() {
+      if (!finished) {
+        delete window[callbackName];
+        script.remove();
+        wishesBox.textContent = 'Không thể kết nối sổ lưu bút.';
+      }
+    };
+
+    script.src =
+      API_URL +
+      '?callback=' + encodeURIComponent(callbackName) +
+      '&_=' + Date.now();
+
+    document.body.appendChild(script);
+  }
+
+  // Tạo nội dung an toàn, không đưa HTML của khách vào trang.
+  function renderWishes(messages) {
+    wishesBox.replaceChildren();
+
+    if (!messages.length) {
+      const empty = document.createElement('p');
+      empty.className = 'guestbook-empty';
+      empty.textContent = 'Hãy là người đầu tiên gửi lời chúc yêu thương!';
+      wishesBox.appendChild(empty);
+      return;
+    }
+
+    messages.forEach(item => {
+      const card = document.createElement('article');
+      card.className = 'guest-wish';
+
+      const name = document.createElement('div');
+      name.className = 'guest-wish-name';
+      name.textContent = item.name;
+
+      const message = document.createElement('div');
+      message.className = 'guest-wish-message';
+      message.textContent = item.message;
+
+      card.append(name, message);
+      wishesBox.appendChild(card);
+    });
+  }
+
+  // Gửi lời chúc.
+  form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('guestName').value.trim();
+    const message = document.getElementById('guestMessage').value.trim();
+    const honeypot = document.getElementById('guestWebsite').value;
+
+    if (honeypot) return;
+
+    if (!name || !message) {
+      statusBox.textContent = 'Vui lòng nhập đầy đủ họ tên và lời chúc.';
+      return;
+    }
+
+    if (name.length > 80 || message.length > 1000) {
+      statusBox.textContent = 'Nội dung vượt quá giới hạn cho phép.';
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'ĐANG GỬI...';
+    statusBox.textContent = '';
+
+    try {
+      const body = new URLSearchParams();
+      body.append('name', name);
+      body.append('message', message);
+
+      // no-cors dùng để gửi biểu mẫu đơn giản đến Apps Script.
+      // Trình duyệt không cho đọc phản hồi, vì vậy không thể xác nhận
+      // chính xác việc ghi dữ liệu từ phía client.
+      await fetch(API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: body
+      });
+
+      statusBox.textContent =
+        'Cảm ơn bạn! Lời chúc đang được gửi và sẽ hiển thị sau khi được duyệt.';
+
+      form.reset();
+
+      // Tải lại danh sách sau một khoảng ngắn để cập nhật giao diện.
+      setTimeout(loadApprovedWishes, 2500);
+
+    } catch (error) {
+      statusBox.textContent =
+        'Chưa gửi được lời chúc. Vui lòng thử lại sau.';
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = 'GỬI LỜI CHÚC';
+    }
+  });
+
+  loadApprovedWishes();
+
+  // Tự cập nhật danh sách lời chúc đã duyệt mỗi 30 giây.
+  setInterval(loadApprovedWishes, 30000);
+})();
+</script>
+
 </body>
 </html>
