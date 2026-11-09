@@ -1129,141 +1129,116 @@
 
 <script>
 (() => {
-  const API_URL = 'https://script.google.com/macros/s/AKfycbytBZnqkB0onDQTgispgXtfdUrMycYzg_uJdr8CYc-U3T-5eBmW4TbxJa2XpUpijbuS9A/exec';
+  const GOOGLE_SHEETS_URL = "DAN_URL_APPS_SCRIPT_CUA_BAN";
 
-  const form = document.getElementById('guestbookForm');
-  const submitButton = document.getElementById('guestSubmit');
-  const statusBox = document.getElementById('guestStatus');
-  const wishesBox = document.getElementById('approvedWishes');
+// Gửi lời chúc lên Google Sheets
+async function submitGuestWish(e) {
+  e.preventDefault();
 
-  // Lấy lời chúc đã duyệt bằng JSONP.
-  function loadApprovedWishes() {
-    const callbackName =
-      'guestbookCallback_' + Date.now() + '_' +
-      Math.floor(Math.random() * 100000);
+  const name = document.getElementById("wishAuthor").value.trim();
+  const role = document.getElementById("wishRole").value;
+  const message = document.getElementById("wishMessage").value.trim();
+  const button = e.target.querySelector('button[type="submit"]');
+  const notice = document.getElementById("wishNotice");
 
-    const script = document.createElement('script');
-    let finished = false;
+  if (!name || !message) return;
 
-    window[callbackName] = function(data) {
-      finished = true;
-      delete window[callbackName];
-      script.remove();
+  const originalText = button.innerHTML;
+  button.disabled = true;
+  button.innerHTML = "<span>Đang gửi lời chúc...</span>";
 
-      if (!data || !data.success) {
-        wishesBox.textContent = 'Không thể tải lời chúc lúc này.';
-        return;
-      }
+  try {
+    const params = new URLSearchParams();
+    params.append("name", name);
+    params.append("role", role);
+    params.append("message", message);
 
-      renderWishes(data.messages || []);
-    };
-
-    script.onerror = function() {
-      if (!finished) {
-        delete window[callbackName];
-        script.remove();
-        wishesBox.textContent = 'Không thể kết nối sổ lưu bút.';
-      }
-    };
-
-    script.src =
-      API_URL +
-      '?callback=' + encodeURIComponent(callbackName) +
-      '&_=' + Date.now();
-
-    document.body.appendChild(script);
-  }
-
-  // Tạo nội dung an toàn, không đưa HTML của khách vào trang.
-  function renderWishes(messages) {
-    wishesBox.replaceChildren();
-
-    if (!messages.length) {
-      const empty = document.createElement('p');
-      empty.className = 'guestbook-empty';
-      empty.textContent = 'Hãy là người đầu tiên gửi lời chúc yêu thương!';
-      wishesBox.appendChild(empty);
-      return;
-    }
-
-    messages.forEach(item => {
-      const card = document.createElement('article');
-      card.className = 'guest-wish';
-
-      const name = document.createElement('div');
-      name.className = 'guest-wish-name';
-      name.textContent = item.name;
-
-      const message = document.createElement('div');
-      message.className = 'guest-wish-message';
-      message.textContent = item.message;
-
-      card.append(name, message);
-      wishesBox.appendChild(card);
+    await fetch(GOOGLE_SHEETS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: params
     });
+
+    document.getElementById("wishAuthor").value = "";
+    document.getElementById("wishMessage").value = "";
+
+    notice.textContent =
+      "Cảm ơn bạn! Lời chúc đã được gửi và đang chờ Quốc Anh & Hải Anh duyệt.";
+    notice.classList.remove("hidden");
+
+    if (typeof fireConfetti === "function") fireConfetti();
+
+  } catch (error) {
+    notice.textContent =
+      "Không thể gửi lời chúc. Vui lòng kiểm tra kết nối và thử lại.";
+    notice.classList.remove("hidden");
+  } finally {
+    button.disabled = false;
+    button.innerHTML = originalText;
   }
+}
 
-  // Gửi lời chúc.
-  form.addEventListener('submit', async function(event) {
-    event.preventDefault();
+// Tải danh sách lời chúc đã duyệt
+function loadApprovedWishes() {
+  const feed = document.getElementById("wishesFeed");
+  if (!feed) return;
 
-    const name = document.getElementById('guestName').value.trim();
-    const message = document.getElementById('guestMessage').value.trim();
-    const honeypot = document.getElementById('guestWebsite').value;
+  const callbackName =
+    "wishesCallback_" + Math.random().toString(36).slice(2);
 
-    if (honeypot) return;
+  const script = document.createElement("script");
 
-    if (!name || !message) {
-      statusBox.textContent = 'Vui lòng nhập đầy đủ họ tên và lời chúc.';
-      return;
-    }
+  window[callbackName] = function(wishes) {
+    feed.innerHTML = "";
 
-    if (name.length > 80 || message.length > 1000) {
-      statusBox.textContent = 'Nội dung vượt quá giới hạn cho phép.';
-      return;
-    }
+    wishes.forEach(wish => {
+      const card = document.createElement("div");
+      card.className =
+        "bg-[#FFFDF9] border border-[#D4AF37]/50 p-4 rounded-sm shadow-xs";
 
-    submitButton.disabled = true;
-    submitButton.textContent = 'ĐANG GỬI...';
-    statusBox.textContent = '';
+      const messageEl = document.createElement("p");
+      messageEl.className =
+        "text-xs sm:text-sm text-[#383F45] font-light leading-relaxed mb-3";
+      messageEl.textContent = "“" + wish.message + "”";
 
-    try {
-      const body = new URLSearchParams();
-      body.append('name', name);
-      body.append('message', message);
+      const footer = document.createElement("div");
+      footer.className =
+        "flex items-center justify-between text-xs pt-2.5 border-t border-[#E8DFD0]/60";
 
-      // no-cors dùng để gửi biểu mẫu đơn giản đến Apps Script.
-      // Trình duyệt không cho đọc phản hồi, vì vậy không thể xác nhận
-      // chính xác việc ghi dữ liệu từ phía client.
-      await fetch(API_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: body
-      });
+      const nameEl = document.createElement("span");
+      nameEl.className =
+        "font-semibold text-[#9B7829] font-serif-luxury text-sm";
+      nameEl.textContent = wish.name;
 
-      statusBox.textContent =
-        'Cảm ơn bạn! Lời chúc đang được gửi và sẽ hiển thị sau khi được duyệt.';
+      const roleEl = document.createElement("span");
+      roleEl.className = "text-[11px] text-[#737C84]";
+      roleEl.textContent = wish.role;
 
-      form.reset();
+      footer.appendChild(nameEl);
+      footer.appendChild(roleEl);
+      card.appendChild(messageEl);
+      card.appendChild(footer);
+      feed.appendChild(card);
+    });
 
-      // Tải lại danh sách sau một khoảng ngắn để cập nhật giao diện.
-      setTimeout(loadApprovedWishes, 2500);
+    delete window[callbackName];
+    script.remove();
+  };
 
-    } catch (error) {
-      statusBox.textContent =
-        'Chưa gửi được lời chúc. Vui lòng thử lại sau.';
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = 'GỬI LỜI CHÚC';
-    }
-  });
+  script.onerror = function() {
+    delete window[callbackName];
+    script.remove();
+    console.error("Không tải được lời chúc từ Google Sheets.");
+  };
 
-  loadApprovedWishes();
+  script.src =
+    GOOGLE_SHEETS_URL +
+    "?callback=" + encodeURIComponent(callbackName) +
+    "&_=" + Date.now();
 
-  // Tự cập nhật danh sách lời chúc đã duyệt mỗi 30 giây.
-  setInterval(loadApprovedWishes, 30000);
-})();
-</script>
+  document.body.appendChild(script);
+}
+
 
 </body>
 </html>
