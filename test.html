@@ -61,6 +61,59 @@
       animation: goldShimmer 3.5s infinite;
       pointer-events: none;
     }
+
+    /* Ảnh đôi tay thay huy hiệu; hai nửa tách sang hai bên khi chạm */
+    .envelope-photo-button {
+      position: relative;
+      display: block;
+      width: 220px;
+      height: 260px;
+      max-width: 68vw;
+      overflow: visible;
+      border: 2px solid #D4AF37;
+      background: #FCFBF7;
+      padding: 0;
+      box-shadow: 0 14px 35px rgba(80, 45, 35, .22);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .envelope-photo-half {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      overflow: hidden;
+      transition: transform 950ms cubic-bezier(.72, 0, .22, 1), opacity 700ms ease;
+      will-change: transform;
+    }
+    .envelope-photo-half img {
+      position: absolute;
+      top: 0;
+      width: 200%;
+      height: 100%;
+      max-width: none;
+      object-fit: cover;
+    }
+    .envelope-photo-half.left { left: 0; }
+    .envelope-photo-half.left img { left: 0; object-position: center; }
+    .envelope-photo-half.right { right: 0; }
+    .envelope-photo-half.right img { right: 0; object-position: center; }
+    .envelope-photo-button.is-opening .left {
+      transform: translateX(-112%) rotate(-5deg);
+      opacity: 0;
+    }
+    .envelope-photo-button.is-opening .right {
+      transform: translateX(112%) rotate(5deg);
+      opacity: 0;
+    }
+    .envelope-photo-button:focus-visible {
+      outline: 3px solid #D4AF37;
+      outline-offset: 5px;
+    }
+    @media (max-width: 420px) {
+      .envelope-photo-button { width: 190px; height: 230px; }
+    }
+
   </style>
 <script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
 <body class="bg-[#FAF8F5] text-[#1C1E21] antialiased selection:bg-[#D4AF37] selection:text-[#1A180E] relative">
@@ -117,17 +170,17 @@
 
       <div class="relative my-4 flex flex-col items-center justify-center">
         <div class="absolute w-32 h-32 rounded-full bg-[#D4AF37]/25 blur-xl animate-pulse"></div>
-        <button onclick="openRoyalEnvelope()" class="group relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-[#D4AF37] bg-white p-2 shadow-xl hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center">
-          <div class="w-full h-full rounded-full border border-[#D4AF37]/50 flex items-center justify-center bg-gradient-to-tr from-[#FAF8F5] via-white to-[#FAF6ED]">
-            <!-- Interlocking AA Monogram -->
-            <svg viewBox="0 0 100 100" class="w-16 h-16" fill="none" stroke="#D4AF37" stroke-linecap="round">
-              <circle cx="50" cy="50" r="46" stroke-width="1.8" stroke-dasharray="4 2" />
-              <path d="M32 72 C 30 52, 40 30, 48 24 C 52 20, 56 22, 54 28 C 50 42, 42 64, 40 72" stroke-width="3.5" />
-              <path d="M26 54 Q 38 48, 56 50 Q 64 51, 60 57 Q 56 62, 48 59" stroke-width="2.2" />
-              <path d="M46 72 C 44 54, 54 32, 60 26 C 65 22, 70 24, 68 30 C 64 45, 58 64, 56 72" stroke-width="3.5" />
-              <path d="M42 56 Q 54 50, 72 52 Q 80 53, 76 59 Q 72 64, 64 61" stroke-width="2.2" />
-            </svg>
-          </div>
+        <button id="envelopePhotoButton" onclick="openRoyalEnvelope()" aria-label="Chạm để mở thiệp cưới" class="envelope-photo-button group hover:scale-[1.03] active:scale-[0.98] transition-transform duration-300">
+          <span class="envelope-photo-half left">
+            <img src="envelope-photo.JPG" alt="" />
+          </span>
+          <span class="envelope-photo-half right">
+            <img src="envelope-photo.JPG" alt="" />
+          </span>
+          <span class="absolute inset-0 pointer-events-none border-[5px] border-white/50"></span>
+          <span class=" absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#FCFBF7]/90 text-[#8B6725] text-[10px] tracking-[0.18em] uppercase px-3 py-1 shadow-sm">
+            Quốc Anh &amp; Hải Anh
+          </span>
         </button>
         <p class="mt-4 text-xs font-semibold text-[#9B7829] tracking-wider uppercase flex items-center gap-1.5 animate-bounce">
           <span>✨ Chạm vào huy hiệu để mở thiệp ✨</span>
@@ -345,7 +398,7 @@
                 <svg class="w-5 h-5 text-[#9B7829] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <div>
                   <span class="font-semibold text-[#1C1E21]">Thời gian đón khách:</span>
-                  <span> 10:00 Thứ Năm, ngày 17/12/2026</span>
+                  <span> 08:30 Thứ Năm, ngày 17/12/2026</span>
                   <span class="block text-xs text-[#737C84] mt-0.5">(Nghi thức Lễ Thành Hôn diễn ra lúc 10:05)</span>
                 </div>
               </div>
@@ -479,7 +532,7 @@
             <span class="ml-2 text-xs font-semibold text-[#1C1E21]">Nhà Trai xuất phát rước dâu</span>
             <p class="text-xs text-[#525B62] mt-1">Đoàn đại biểu họ Nhà Trai xuất phát sang tư gia họ Nhà Gái.</p>
           </div>
-
+          <!-- <span class="text-xs px-2.5 py-1 bg-[#FAF8F5] text-[#9B7829] border border-[#D4AF37]/50 rounded font-medium"> </span> -->
         </div>
 
         <div class="bg-[#FFFDF9] border border-[#E8DFD0] p-5 rounded-sm shadow-xs flex items-center justify-between">
@@ -488,25 +541,25 @@
             <span class="ml-2 text-xs font-semibold text-[#1C1E21]">Lễ Vu Quy tại Nhà Gái</span>
             <p class="text-xs text-[#525B62] mt-1">Nghi thức gia tiên, trao nhẫn cưới và lời chúc phúc của cha mẹ.</p>
           </div>
-          <span class="text-xs px-2.5 py-1 bg-[#FAF8F5] text-[#9B7829] border border-[#D4AF37]/50 rounded font-medium">Lễ Vu Quy</span>
+          <!-- <span class="text-xs px-2.5 py-1 bg-[#FAF8F5] text-[#9B7829] border border-[#D4AF37]/50 rounded font-medium">Lễ Vu Quy</span> -->
         </div>
 
         <div class="bg-[#FFFDF9] border border-[#E8DFD0] p-5 rounded-sm shadow-xs flex items-center justify-between">
           <div>
-            <span class="font-serif-luxury text-xl font-bold text-[#9B7829]">11:00</span>
+            <span class="font-serif-luxury text-xl font-bold text-[#9B7829]">10:05</span>
             <span class="ml-2 text-xs font-semibold text-[#1C1E21]">Lễ Thành Hôn tại Nhà Trai</span>
             <p class="text-xs text-[#525B62] mt-1">Lễ đón dâu về Nhà Trai và báo cáo gia tiên dòng họ.</p>
           </div>
-          <span class="text-xs px-2.5 py-1 bg-[#FAF8F5] text-[#9B7829] border border-[#D4AF37]/50 rounded font-medium">Thành Hôn</span>
+          <!-- <span class="text-xs px-2.5 py-1 bg-[#FAF8F5] text-[#9B7829] border border-[#D4AF37]/50 rounded font-medium">Thành Hôn</span> -->
         </div>
 
         <div class="bg-[#FFFDF9] border border-[#E8DFD0] p-5 rounded-sm shadow-xs flex items-center justify-between">
           <div>
-            <span class="font-serif-luxury text-xl font-bold text-[#9B7829]">11:30</span>
+            <span class="font-serif-luxury text-xl font-bold text-[#9B7829]">10:15</span>
             <span class="ml-2 text-xs font-semibold text-[#1C1E21]">Khai Tiệc Mừng Hạnh Phúc</span>
             <p class="text-xs text-[#525B62] mt-1">Khai tiệc mừng chiêu đãi quan khách họ hàng đôi bên.</p>
           </div>
-          <span class="text-xs px-2.5 py-1 bg-[#FAF8F5] text-[#9B7829] border border-[#D4AF37]/50 rounded font-medium">Tiệc Mừng</span>
+          <!-- <span class="text-xs px-2.5 py-1 bg-[#FAF8F5] text-[#9B7829] border border-[#D4AF37]/50 rounded font-medium">Tiệc Mừng</span> -->
         </div>
       </div>
     </div>
@@ -581,26 +634,7 @@
           <span class="text-xs text-[#737C84] italic">Yêu thương đong đầy</span>
         </div>
         <div id="wishesFeed" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-1">
-          <!-- Sample Wish 1 -->
-          <div class="bg-[#FFFDF9] border border-[#D4AF37]/40 p-4 rounded-sm shadow-2xs hover:border-[#D4AF37] transition-all">
-            <p class="text-xs sm:text-sm text-[#383F45] font-light leading-relaxed mb-3">
-              “Chúc hai cháu Quốc Anh &amp; Hải Anh trăm năm tình viên mãn, đầu bạc nghĩa phu thê! Luôn yêu thương và cùng nhau vun đắp tổ ấm hạnh phúc.”
-            </p>
-            <div class="flex items-center justify-between text-xs pt-2.5 border-t border-[#E8DFD0]/60">
-              <span class="font-semibold text-[#9B7829] font-serif-luxury text-sm">Gia đình Bác Thành</span>
-              <span class="text-[11px] text-[#737C84]">Họ Hàng Nhà Trai</span>
-            </div>
-          </div>
-          <!-- Sample Wish 2 -->
-          <div class="bg-[#FFFDF9] border border-[#D4AF37]/40 p-4 rounded-sm shadow-2xs hover:border-[#D4AF37] transition-all">
-            <p class="text-xs sm:text-sm text-[#383F45] font-light leading-relaxed mb-3">
-              “Chúc mừng Quốc Anh rước được nàng thơ Hải Anh về dinh! Chúc đôi bạn trẻ luôn ngọt ngào như ngày đầu, sớm đón thiên thần nhỏ nhé!”
-            </p>
-            <div class="flex items-center justify-between text-xs pt-2.5 border-t border-[#E8DFD0]/60">
-              <span class="font-semibold text-[#9B7829] font-serif-luxury text-sm">Nhóm Bạn Cấp 3</span>
-              <span class="text-[11px] text-[#737C84]">Bạn Chú Rể</span>
-            </div>
-          </div>
+          <p id="wishesLoading" class="text-xs text-[#737C84] italic md:col-span-2 text-center py-6">Đang tải lời chúc...</p>
         </div>
       </div>
 
@@ -706,16 +740,25 @@
 
     // Royal Envelope Ceremony
     function openRoyalEnvelope() {
-      startWeddingMusic();
-      fireConfetti();
-      const modal = document.getElementById("envelopeModal");
-      const card = modal.querySelector("div");
-      card.style.transform = "scale(1.06)";
-      card.style.opacity = "0";
-      modal.style.opacity = "0";
+      const photoButton = document.getElementById("envelopePhotoButton");
+      if (photoButton && !photoButton.classList.contains("is-opening")) {
+        photoButton.classList.add("is-opening");
+        photoButton.disabled = true;
+      }
+
+      // Cho hai nửa ảnh tách sang hai bên trước, sau đó mới đóng màn thiệp.
       setTimeout(() => {
-        modal.classList.add("hidden");
-      }, 700);
+        startWeddingMusic();
+        fireConfetti();
+        const modal = document.getElementById("envelopeModal");
+        const card = modal.querySelector("div");
+        card.style.transform = "scale(1.06)";
+        card.style.opacity = "0";
+        modal.style.opacity = "0";
+        setTimeout(() => {
+          modal.classList.add("hidden");
+        }, 700);
+      }, 780);
     }
 
     function dismissEnvelope() {
@@ -837,38 +880,121 @@
       }
     }
 
-    // Guestbook Wish Submission to LocalStorage
-    function submitGuestWish(e) {
+    // Google Sheets guestbook integration
+    // Dán URL Web App của Google Apps Script vào biến bên dưới.
+    const WISH_API_URL = "https://script.google.com/macros/s/AKfycbw58zhW8fKeiLcolSenZvBDwq03MJ__apssXtfciyam-GehXwTpdBBeqa-vocNN4_A4Nw/exec";
+
+    function renderApprovedWishes(wishes) {
+      const feed = document.getElementById("wishesFeed");
+      feed.replaceChildren();
+
+      if (!Array.isArray(wishes) || wishes.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "text-xs text-[#737C84] italic md:col-span-2 text-center py-6";
+        empty.textContent = "Chưa có lời chúc nào được hiển thị. Hãy là người đầu tiên gửi lời chúc!";
+        feed.appendChild(empty);
+        return;
+      }
+
+      wishes.forEach(wish => {
+        const card = document.createElement("div");
+        card.className = "bg-[#FFFDF9] border border-[#D4AF37]/40 p-4 rounded-sm shadow-2xs hover:border-[#D4AF37] transition-all";
+
+        const messageEl = document.createElement("p");
+        messageEl.className = "text-xs sm:text-sm text-[#383F45] font-light leading-relaxed mb-3";
+        messageEl.textContent = "“" + String(wish.message || "") + "”";
+
+        const footer = document.createElement("div");
+        footer.className = "flex items-center justify-between text-xs pt-2.5 border-t border-[#E8DFD0]/60";
+
+        const nameEl = document.createElement("span");
+        nameEl.className = "font-semibold text-[#9B7829] font-serif-luxury text-sm";
+        nameEl.textContent = String(wish.name || "");
+
+        const roleEl = document.createElement("span");
+        roleEl.className = "text-[11px] text-[#737C84]";
+        roleEl.textContent = String(wish.role || "");
+
+        footer.append(nameEl, roleEl);
+        card.append(messageEl, footer);
+        feed.appendChild(card);
+      });
+    }
+
+    // JSONP giúp tải danh sách đã duyệt từ Google Apps Script mà không vướng CORS.
+    function loadApprovedWishes() {
+      const feed = document.getElementById("wishesFeed");
+      if (!WISH_API_URL || WISH_API_URL.includes("PASTE_YOUR_")) {
+        const msg = document.getElementById("wishesLoading");
+        if (msg) msg.textContent = "Vui lòng cấu hình URL Google Apps Script để tải lời chúc.";
+        return;
+      }
+
+      const callbackName = "receiveApprovedWishes";
+      window[callbackName] = function (wishes) {
+        renderApprovedWishes(wishes);
+        delete window[callbackName];
+        script.remove();
+      };
+
+      const script = document.createElement("script");
+      script.src = WISH_API_URL + (WISH_API_URL.includes("?") ? "&" : "?") +
+        "callback=" + callbackName + "&_=" + Date.now();
+      script.onerror = function () {
+        const msg = document.getElementById("wishesFeed");
+        msg.textContent = "Không thể tải lời chúc. Vui lòng thử tải lại trang.";
+        delete window[callbackName];
+        script.remove();
+      };
+      document.head.appendChild(script);
+    }
+
+    async function submitGuestWish(e) {
       e.preventDefault();
+
+      const form = document.getElementById("wishForm");
+      const submitButton = form.querySelector('button[type="submit"]');
       const name = document.getElementById("wishAuthor").value.trim();
       const role = document.getElementById("wishRole").value;
       const message = document.getElementById("wishMessage").value.trim();
+
       if (!name || !message) return;
+      if (!WISH_API_URL || WISH_API_URL.includes("PASTE_YOUR_")) {
+        alert("Website chưa được cấu hình kết nối database. Vui lòng thử lại sau.");
+        return;
+      }
 
-      const feed = document.getElementById("wishesFeed");
-      const card = document.createElement("div");
-      card.className = "bg-[#FFFDF9] border border-[#D4AF37]/50 p-4 rounded-sm shadow-xs animate-in fade-in";
-      card.innerHTML = `
-        <p class="text-xs sm:text-sm text-[#383F45] font-light leading-relaxed mb-3">“${message}”</p>
-        <div class="flex items-center justify-between text-xs pt-2.5 border-t border-[#E8DFD0]/60">
-          <span class="font-semibold text-[#9B7829] font-serif-luxury text-sm">${name}</span>
-          <span class="text-[11px] text-[#737C84]">${role} · Vừa xong</span>
-        </div>
-      `;
-      feed.insertBefore(card, feed.firstChild);
+      submitButton.disabled = true;
+      submitButton.classList.add("opacity-60", "cursor-wait");
 
-      document.getElementById("wishAuthor").value = "";
-      document.getElementById("wishMessage").value = "";
+      try {
+        const body = new URLSearchParams({ name, role, message });
+        // Apps Script nhận dữ liệu qua e.parameter. no-cors tránh lỗi preflight/CORS.
+        await fetch(WISH_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          body
+        });
 
-      const notice = document.getElementById("wishNotice");
-      notice.classList.remove("hidden");
-      fireConfetti();
-      setTimeout(() => notice.classList.add("hidden"), 4000);
+        form.reset();
+        const notice = document.getElementById("wishNotice");
+        notice.textContent = "✓ Cảm ơn bạn! Lời chúc của bạn đã được ghi vào sổ lưu bút của Quốc Anh & Hải Anh.";
+        notice.classList.remove("hidden");
+        fireConfetti();
+        setTimeout(() => notice.classList.add("hidden"), 5000);
+      } catch (error) {
+        alert("Chưa gửi được lời chúc. Vui lòng kiểm tra kết nối mạng và thử lại.");
+        console.error("Gửi lời chúc thất bại:", error);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.classList.remove("opacity-60", "cursor-wait");
+      }
     }
 
     // Initialize Listeners
     window.addEventListener('DOMContentLoaded', () => {
       initGoldDust();
+      loadApprovedWishes();
 
       const progressBar = document.getElementById('goldScrollProgress');
       const floatingDock = document.getElementById('floatingNavDock');
@@ -942,303 +1068,5 @@
       document.getElementById("qrModal").classList.add("hidden");
     }
   </script>
-  
-<!-- QUỐC ANH & HẢI ANH - SỔ LƯU BÚT -->
-<section id="realGuestbook" class="real-guestbook">
-  <div class="guestbook-inner">
-    <div class="guestbook-heading">
-      <span class="guestbook-subtitle">A MESSAGE OF LOVE</span>
-      <h2>Ký Tên Vào Sổ Lưu Bút</h2>
-      <p>Hãy để lại những lời chúc tốt đẹp dành cho Quốc Anh & Hải Anh.</p>
-    </div>
-
-    <form id="guestbookForm">
-      <label for="guestName">Họ và tên</label>
-      <input
-        id="guestName"
-        name="name"
-        type="text"
-        maxlength="80"
-        placeholder="Nhập họ và tên của bạn"
-        required
-      >
-
-      <label for="guestMessage">Lời chúc</label>
-      <textarea
-        id="guestMessage"
-        name="message"
-        maxlength="1000"
-        rows="4"
-        placeholder="Viết lời chúc dành cho cô dâu và chú rể..."
-        required
-      ></textarea>
-
-      <!-- Ô chống spam tự động -->
-      <input
-        type="text"
-        id="guestWebsite"
-        tabindex="-1"
-        autocomplete="off"
-        style="position:absolute;left:-9999px"
-        aria-hidden="true"
-      >
-
-      <button type="submit" id="guestSubmit">
-        GỬI LỜI CHÚC
-      </button>
-
-      <p id="guestStatus" role="status" aria-live="polite"></p>
-    </form>
-
-    <div class="guestbook-divider"></div>
-
-    <h3>Những lời chúc yêu thương</h3>
-    <div id="approvedWishes">
-      <p class="guestbook-loading">Đang tải lời chúc...</p>
-    </div>
-  </div>
-</section>
-
-<style>
-.real-guestbook {
-  padding: 65px 20px;
-  background: #f8f2e9;
-  color: #54202b;
-}
-
-.guestbook-inner {
-  max-width: 720px;
-  margin: auto;
-}
-
-.guestbook-heading {
-  text-align: center;
-  margin-bottom: 35px;
-}
-
-.guestbook-subtitle {
-  color: #b18b4d;
-  letter-spacing: 4px;
-  font-size: 11px;
-}
-
-.guestbook-heading h2 {
-  font-family: Georgia, serif;
-  font-size: clamp(27px, 5vw, 40px);
-  margin: 14px 0;
-}
-
-.guestbook-heading p {
-  color: #806c61;
-  line-height: 1.7;
-}
-
-#guestbookForm {
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-}
-
-#guestbookForm label {
-  font-weight: 600;
-  margin-top: 8px;
-}
-
-#guestbookForm input:not([type="text"]),
-#guestbookForm input,
-#guestbookForm textarea {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #dfcfb8;
-  background: #fffdf9;
-  color: #54202b;
-  padding: 14px;
-  border-radius: 8px;
-  font: inherit;
-}
-
-#guestbookForm textarea {
-  resize: vertical;
-}
-
-#guestbookForm button {
-  margin-top: 12px;
-  padding: 15px;
-  background: #682c38;
-  color: #fff;
-  border: 0;
-  border-radius: 8px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  cursor: pointer;
-}
-
-#guestbookForm button:disabled {
-  opacity: .6;
-  cursor: wait;
-}
-
-#guestStatus {
-  min-height: 22px;
-  text-align: center;
-  color: #806c61;
-  line-height: 1.6;
-}
-
-.guestbook-divider {
-  height: 1px;
-  background: #dfcfb8;
-  margin: 35px 0;
-}
-
-.guestbook-inner h3 {
-  text-align: center;
-  font-family: Georgia, serif;
-  font-size: 25px;
-  margin-bottom: 25px;
-}
-
-.guest-wish {
-  background: #fffdf9;
-  border: 1px solid #eadcc9;
-  border-radius: 10px;
-  padding: 19px;
-  margin-bottom: 14px;
-}
-
-.guest-wish-name {
-  color: #a17b42;
-  font-weight: bold;
-  margin-bottom: 9px;
-}
-
-.guest-wish-message {
-  color: #5e4b45;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.guestbook-loading,
-.guestbook-empty {
-  text-align: center;
-  color: #806c61;
-  padding: 20px;
-}
-</style>
-
-<script>
-(() => {
-  const GOOGLE_SHEETS_URL = "DAN_URL_APPS_SCRIPT_CUA_BAN";
-
-// Gửi lời chúc lên Google Sheets
-async function submitGuestWish(e) {
-  e.preventDefault();
-
-  const name = document.getElementById("wishAuthor").value.trim();
-  const role = document.getElementById("wishRole").value;
-  const message = document.getElementById("wishMessage").value.trim();
-  const button = e.target.querySelector('button[type="submit"]');
-  const notice = document.getElementById("wishNotice");
-
-  if (!name || !message) return;
-
-  const originalText = button.innerHTML;
-  button.disabled = true;
-  button.innerHTML = "<span>Đang gửi lời chúc...</span>";
-
-  try {
-    const params = new URLSearchParams();
-    params.append("name", name);
-    params.append("role", role);
-    params.append("message", message);
-
-    await fetch(GOOGLE_SHEETS_URL, {
-      method: "POST",
-      mode: "no-cors",
-      body: params
-    });
-
-    document.getElementById("wishAuthor").value = "";
-    document.getElementById("wishMessage").value = "";
-
-    notice.textContent =
-      "Cảm ơn bạn! Lời chúc đã được gửi và đang chờ Quốc Anh & Hải Anh duyệt.";
-    notice.classList.remove("hidden");
-
-    if (typeof fireConfetti === "function") fireConfetti();
-
-  } catch (error) {
-    notice.textContent =
-      "Không thể gửi lời chúc. Vui lòng kiểm tra kết nối và thử lại.";
-    notice.classList.remove("hidden");
-  } finally {
-    button.disabled = false;
-    button.innerHTML = originalText;
-  }
-}
-
-// Tải danh sách lời chúc đã duyệt
-function loadApprovedWishes() {
-  const feed = document.getElementById("wishesFeed");
-  if (!feed) return;
-
-  const callbackName =
-    "wishesCallback_" + Math.random().toString(36).slice(2);
-
-  const script = document.createElement("script");
-
-  window[callbackName] = function(wishes) {
-    feed.innerHTML = "";
-
-    wishes.forEach(wish => {
-      const card = document.createElement("div");
-      card.className =
-        "bg-[#FFFDF9] border border-[#D4AF37]/50 p-4 rounded-sm shadow-xs";
-
-      const messageEl = document.createElement("p");
-      messageEl.className =
-        "text-xs sm:text-sm text-[#383F45] font-light leading-relaxed mb-3";
-      messageEl.textContent = "“" + wish.message + "”";
-
-      const footer = document.createElement("div");
-      footer.className =
-        "flex items-center justify-between text-xs pt-2.5 border-t border-[#E8DFD0]/60";
-
-      const nameEl = document.createElement("span");
-      nameEl.className =
-        "font-semibold text-[#9B7829] font-serif-luxury text-sm";
-      nameEl.textContent = wish.name;
-
-      const roleEl = document.createElement("span");
-      roleEl.className = "text-[11px] text-[#737C84]";
-      roleEl.textContent = wish.role;
-
-      footer.appendChild(nameEl);
-      footer.appendChild(roleEl);
-      card.appendChild(messageEl);
-      card.appendChild(footer);
-      feed.appendChild(card);
-    });
-
-    delete window[callbackName];
-    script.remove();
-  };
-
-  script.onerror = function() {
-    delete window[callbackName];
-    script.remove();
-    console.error("Không tải được lời chúc từ Google Sheets.");
-  };
-
-  script.src =
-    GOOGLE_SHEETS_URL +
-    "?callback=" + encodeURIComponent(callbackName) +
-    "&_=" + Date.now();
-
-  document.body.appendChild(script);
-}
-
-
 </body>
 </html>
