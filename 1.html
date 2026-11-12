@@ -94,6 +94,18 @@
       max-width: none;
       object-fit: cover;
     }
+ /* Canvas trái tim hạt: chỉ chạy khi khách chạm vào ảnh mở thiệp */
+    #heartParticleCanvas {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+
     .envelope-photo-half.left { left: 0; }
     .envelope-photo-half.left img { left: 0; object-position: center; }
     .envelope-photo-half.right { right: 0; }
@@ -221,8 +233,8 @@
 
       <span class="absolute inset-0 pointer-events-none border-[7px] border-white/20"></span>
 
-      <span id="heartBurst" class="heart-burst" aria-hidden="true">♥</span>
-
+        <canvas id="heartParticleCanvas" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true"></canvas>
+        
       <span class="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 whitespace-nowrap  text-[#8B6725] px-4 py-2 shadow-sm">
         <span class="text-[11px] tracking-[0.16em] uppercase font-semibold">
           Quốc Anh &amp; Hải Anh
@@ -307,7 +319,7 @@
         <!-- Divider -->
         <div class="flex items-center justify-center gap-3 my-6 max-w-xs mx-auto">
           <div class="h-px flex-1 bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
-          <span class="text-[#D4AF37] text-xs">❦</span>
+          <span class="text-[#D4AF37] text-xs">♥</span>
           <div class="h-px flex-1 bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
         </div>
 
@@ -382,7 +394,7 @@
         </p>
         <div class="flex items-center justify-center gap-3 my-5 max-w-xs mx-auto">
           <div class="h-px flex-1 bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
-          <span class="text-[#D4AF37] text-xs">❦</span>
+          <span class="text-[#D4AF37] text-xs">♥</span>
           <div class="h-px flex-1 bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
         </div>
 
@@ -793,7 +805,115 @@
         origin: { x: .5, y: .38 }, colors: gold, ticks: 220, scalar: 1.15 }), 350);
     }
 
-    // Chạm ảnh: trái tim xuất hiện, pháo hoa vàng bừng nở, sau đó mở website và phát nhạc.
+    /*
+     * Hiệu ứng Particle Heart được chuyển thể từ traitim.html:
+     * tạo các hạt nhỏ mang hình trái tim, chuyển động theo quỹ đạo trái tim.
+     * Canvas chỉ hoạt động sau cú chạm và tự dừng sau khoảng 1,5 giây.
+     */
+    function playHeartParticleBurst() {
+      const canvas = document.getElementById("heartParticleCanvas");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const width = rect.width;
+      const height = rect.height;
+      const centerX = width / 2;
+      const centerY = height / 2 - 8;
+      const scale = Math.min(width, height) / 440;
+      const duration = 1.45;
+      const startedAt = performance.now();
+      const particles = [];
+      const particleCount = 430;
+
+      function pointOnHeart(t) {
+        return {
+          x: 160 * Math.pow(Math.sin(t), 3),
+          y: 130 * Math.cos(t) - 50 * Math.cos(2 * t)
+             - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t) + 25
+        };
+      }
+
+      // Vẽ một hạt nhỏ có hình trái tim giống file hiệu ứng gốc.
+      const heartStamp = document.createElement("canvas");
+      heartStamp.width = 32;
+      heartStamp.height = 32;
+      const stampCtx = heartStamp.getContext("2d");
+      stampCtx.save();
+      stampCtx.translate(16, 16);
+      stampCtx.beginPath();
+      stampCtx.moveTo(0, 10);
+      stampCtx.bezierCurveTo(-19, -2, -10, -15, 0, -7);
+      stampCtx.bezierCurveTo(10, -15, 19, -2, 0, 10);
+      stampCtx.closePath();
+      stampCtx.fillStyle = "#f7a9c4";
+      stampCtx.shadowColor = "rgba(255,190,215,.9)";
+      stampCtx.shadowBlur = 8;
+      stampCtx.fill();
+      stampCtx.restore();
+
+      for (let i = 0; i < particleCount; i++) {
+        const t = -Math.PI + Math.random() * Math.PI * 2;
+        const p = pointOnHeart(t);
+        const x = p.x * scale;
+        const y = -p.y * scale;
+        const speed = 0.22 + Math.random() * 0.62;
+        particles.push({
+          x: centerX + x,
+          y: centerY + y,
+          vx: x * speed,
+          vy: y * speed,
+          age: Math.random() * 0.16,
+          life: 0.95 + Math.random() * 0.5,
+          size: 5 + Math.random() * 9,
+          rotation: Math.random() * Math.PI * 2,
+          spin: (Math.random() - 0.5) * 2.4
+        });
+      }
+
+      function render(now) {
+        const elapsed = (now - startedAt) / 1000;
+        ctx.clearRect(0, 0, width, height);
+
+        for (const p of particles) {
+          const age = elapsed + p.age;
+          if (age >= p.life) continue;
+
+          const progress = age / p.life;
+          // Lực hút nhẹ về tâm mô phỏng chuyển động hạt trong hiệu ứng gốc.
+          const pull = 0.985;
+          p.vx *= pull;
+          p.vy *= pull;
+          p.x += p.vx * 0.035;
+          p.y += p.vy * 0.035;
+          p.rotation += p.spin * 0.016;
+
+          const alpha = Math.sin(Math.PI * progress) * (1 - progress * 0.35);
+          const size = p.size * (0.65 + progress * 0.55);
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, alpha);
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation);
+          ctx.drawImage(heartStamp, -size / 2, -size / 2, size, size);
+          ctx.restore();
+        }
+
+        if (elapsed < duration) {
+          requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, width, height);
+        }
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    // Chạm ảnh: trái tim hạt xuất hiện, pháo hoa vàng bừng nở, sau đó mở website và phát nhạc.
     let envelopeOpening = false;
     function openRoyalEnvelope() {
       if (envelopeOpening) return;
@@ -802,14 +922,13 @@
       // Phát nhạc ngay trong thao tác chạm để đáp ứng chính sách autoplay của trình duyệt.
       startWeddingMusic();
       const photoButton = document.getElementById("envelopePhotoButton");
-      const heart = document.getElementById("heartBurst");
       const modal = document.getElementById("envelopeModal");
       if (photoButton) {
         photoButton.disabled = true;
         photoButton.style.boxShadow = "0 0 0 12px rgba(212,175,55,.16), 0 0 65px rgba(245,229,192,.65)";
       }
-      if (heart) heart.classList.add("play");
 
+      playHeartParticleBurst();
       setTimeout(fireGoldenFireworks, 180);
       setTimeout(() => {
         if (modal) modal.classList.add("is-closing");

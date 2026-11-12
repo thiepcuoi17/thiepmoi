@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quốc Anh &amp; Hải Anh — Thiệp Cưới &amp; Chỉ Đường Lễ Cưới</title>
-  <meta name="description" content="Trân trọng kính mời quý khách tham dự lễ cưới của Quốc Anh &amp; Hải Anh ngày 17/12/2026. Chỉ đường Google Maps Nhà Trai &amp; Nhà Gái." />
+  <meta name="description" content="Trân trọng kính mời quý khách tham dự lễ cưới của Quốc Anh &amp; Hải Anh ngày 17/12/2026" />
   
   <!-- OpenGraph Social Metadata -->
-  <meta property="og:title" content="Quốc Anh &amp; Hải Anh — Thiệp Cưới &amp; Chỉ Đường" />
+  <meta property="og:title" content="Quốc Anh &amp; Hải Anh — Thiệp Cưới &amp; " />
   <meta property="og:description" content="Bản đồ chỉ đường Google Maps Nhà Trai, Nhà Gái và lịch trình hôn lễ ngày 17/12/2026." />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -114,6 +114,53 @@
       .envelope-photo-button { width: 190px; height: 230px; }
     }
 
+    /* Màn hình mở đầu tối giản: chỉ hiển thị ảnh đôi tay trao nhẫn */
+    #envelopeModal {
+      background: radial-gradient(ellipse at center, rgba(40, 25, 20, .72), rgba(10, 8, 8, .94));
+      transition: opacity 900ms ease, visibility 900ms ease;
+    }
+    #envelopeModal.is-closing {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    #envelopeModal .envelope-photo-button {
+      width: min( min(76vw, 390px), 390px);
+      height: min( min(82vh, 520px), 520px);
+      max-width: 76vw;
+      border: 2px solid rgba(232, 205, 130, .95);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 0 0 8px rgba(212,175,55,.08), 0 22px 70px rgba(0,0,0,.48), 0 0 35px rgba(212,175,55,.24);
+      background: #211914;
+      transition: transform .35s ease, box-shadow .35s ease, opacity .8s ease;
+    }
+    #envelopeModal .envelope-photo-button img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    #envelopeModal .envelope-photo-button:active { transform: scale(.97); }
+    /* Canvas trái tim hạt: chỉ chạy khi khách chạm vào ảnh mở thiệp */
+    #heartParticleCanvas {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    #envelopeModal .envelope-photo-button > img { z-index: 1; }
+    #envelopeModal .envelope-photo-button > .photo-frame-overlay { z-index: 2; }
+    #envelopeModal .envelope-photo-button > .photo-caption { z-index: 6; position: relative; }
+    @media (prefers-reduced-motion: reduce) {
+      #envelopeModal, #envelopeModal * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+
   </style>
 <script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
 <body class="bg-[#FAF8F5] text-[#1C1E21] antialiased selection:bg-[#D4AF37] selection:text-[#1A180E] relative">
@@ -154,46 +201,33 @@
     </div>
   </div>
 
-  <!-- Interactive Royal Envelope Opening Modal -->
-  <div id="envelopeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-700">
-    <div class="relative w-full max-w-lg bg-[#FCFBF7] border-2 border-[#D4AF37] rounded-sm p-8 sm:p-12 shadow-2xl text-center transform transition-all duration-700" style="box-shadow: 0 25px 60px -15px rgba(212, 175, 55, 0.45);">
-      <div class="absolute top-3 left-3 text-[#D4AF37] opacity-60 text-lg">✤</div>
-      <div class="absolute top-3 right-3 text-[#D4AF37] opacity-60 text-lg">✤</div>
-      <div class="absolute bottom-3 left-3 text-[#D4AF37] opacity-60 text-lg">✤</div>
-      <div class="absolute bottom-3 right-3 text-[#D4AF37] opacity-60 text-lg">✤</div>
+  <!-- Màn hình mở đầu tối giản: chạm ảnh để mở thiệp -->
+<div id="envelopeModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+  <button
+    id="envelopePhotoButton"
+    onclick="openRoyalEnvelope()"
+    aria-label="Chạm vào ảnh để mở thiệp cưới"
+    class="envelope-photo-button relative block group"
+  >
+    <img src="envelope-photo.JPG" alt="Đôi tay trao nhẫn cưới" />
 
-      <p class="text-xs uppercase tracking-[0.3em] text-[#9B7829] font-bold mb-2">THIỆP CƯỚI HOÀNG GIA</p>
-      <h2 class="font-serif-luxury text-3xl sm:text-4xl font-normal text-[#1C1E21] tracking-wide mb-1">
+    <!-- Khung viền mờ -->
+    <span class="absolute inset-0 pointer-events-none border-[7px] border-white/20"></span>
+
+    <!-- Canvas hiệu ứng tim: thêm absolute inset-0 w-full h-full pointer-events-none để không làm lệch bố cục -->
+    <canvas id="heartParticleCanvas" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true"></canvas>
+
+    <!-- Khối chữ tên & ngày cưới: giữ nguyên class gốc như bạn muốn -->
+    <span class="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 whitespace-nowrap text-[#8B6725] px-4 py-2 shadow-sm">
+      <span class="text-[11px] tracking-[0.16em] uppercase font-semibold">
         Quốc Anh &amp; Hải Anh
-      </h2>
-      <p class="text-xs text-[#737C84] mb-8 font-light">17 Tháng 12 Năm 2026</p>
-
-      <div class="relative my-4 flex flex-col items-center justify-center">
-        <div class="absolute w-32 h-32 rounded-full bg-[#D4AF37]/25 blur-xl animate-pulse"></div>
-        <button id="envelopePhotoButton" onclick="openRoyalEnvelope()" aria-label="Chạm để mở thiệp cưới" class="envelope-photo-button group hover:scale-[1.03] active:scale-[0.98] transition-transform duration-300">
-          <span class="envelope-photo-half left">
-            <img src="envelope-photo.JPG" alt="" />
-          </span>
-          <span class="envelope-photo-half right">
-            <img src="envelope-photo.JPG" alt="" />
-          </span>
-          <span class="absolute inset-0 pointer-events-none border-[5px] border-white/50"></span>
-          <span class=" absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#FCFBF7]/90 text-[#8B6725] text-[10px] tracking-[0.18em] uppercase px-3 py-1 shadow-sm">
-            Quốc Anh &amp; Hải Anh
-          </span>
-        </button>
-        <p class="mt-4 text-xs font-semibold text-[#9B7829] tracking-wider uppercase flex items-center gap-1.5 animate-bounce">
-          <span>✨ Chạm vào huy hiệu để mở thiệp ✨</span>
-        </p>
-      </div>
-
-      <div class="mt-6 pt-4 border-t border-[#E8DFD0] flex justify-center">
-        <button onclick="dismissEnvelope()" class="text-xs text-[#737C84] hover:text-[#1C1E21] underline underline-offset-4 cursor-pointer">
-          Bỏ qua hiệu ứng &amp; Xem ngay
-        </button>
-      </div>
-    </div>
-  </div>
+      </span>
+      <span class="text-[10px] tracking-[0.14em] uppercase">
+        17 Tháng 12 Năm 2026
+      </span>
+    </span>
+  </button>
+</div>
 
   <!-- Top Sticky Navigation -->
   <header class="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E8DFD0] transition-all">
@@ -268,7 +302,7 @@
         <!-- Divider -->
         <div class="flex items-center justify-center gap-3 my-6 max-w-xs mx-auto">
           <div class="h-px flex-1 bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
-          <span class="text-[#D4AF37] text-xs">❦</span>
+          <span class="text-[#D4AF37] text-xs">♥</span>
           <div class="h-px flex-1 bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
         </div>
 
@@ -343,7 +377,7 @@
         </p>
         <div class="flex items-center justify-center gap-3 my-5 max-w-xs mx-auto">
           <div class="h-px flex-1 bg-gradient-to-r from-transparent to-[#D4AF37]"></div>
-          <span class="text-[#D4AF37] text-xs">❦</span>
+          <span class="text-[#D4AF37] text-xs">♥</span>
           <div class="h-px flex-1 bg-gradient-to-l from-transparent to-[#D4AF37]"></div>
         </div>
 
@@ -738,33 +772,160 @@
       }
     }
 
-    // Royal Envelope Ceremony
-    function openRoyalEnvelope() {
-      const photoButton = document.getElementById("envelopePhotoButton");
-      if (photoButton && !photoButton.classList.contains("is-opening")) {
-        photoButton.classList.add("is-opening");
-        photoButton.disabled = true;
-      }
-
-      // Cho hai nửa ảnh tách sang hai bên trước, sau đó mới đóng màn thiệp.
-      setTimeout(() => {
-        startWeddingMusic();
-        fireConfetti();
-        const modal = document.getElementById("envelopeModal");
-        const card = modal.querySelector("div");
-        card.style.transform = "scale(1.06)";
-        card.style.opacity = "0";
-        modal.style.opacity = "0";
-        setTimeout(() => {
-          modal.classList.add("hidden");
-        }, 700);
-      }, 780);
+    // Pháo hoa vàng nhiều đợt, bung từ hai bên và phía trên màn hình.
+    function fireGoldenFireworks() {
+      if (typeof confetti !== "function") return;
+      const gold = ["#D4AF37", "#F5E5C0", "#E8CD82", "#C59B27", "#FFF4D6"];
+      const end = Date.now() + 1500;
+      (function burst() {
+        confetti({ particleCount: 7, angle: 60, spread: 58, startVelocity: 52, gravity: .9,
+          origin: { x: .08, y: .62 }, colors: gold, ticks: 180, scalar: 1.05 });
+        confetti({ particleCount: 7, angle: 120, spread: 58, startVelocity: 52, gravity: .9,
+          origin: { x: .92, y: .62 }, colors: gold, ticks: 180, scalar: 1.05 });
+        if (Date.now() < end) setTimeout(burst, 220);
+      })();
+      setTimeout(() => confetti({ particleCount: 95, spread: 115, startVelocity: 42,
+        origin: { x: .5, y: .38 }, colors: gold, ticks: 220, scalar: 1.15 }), 350);
     }
 
-    function dismissEnvelope() {
+    /*
+     * Hiệu ứng Particle Heart được chuyển thể từ traitim.html:
+     * tạo các hạt nhỏ mang hình trái tim, chuyển động theo quỹ đạo trái tim.
+     * Canvas chỉ hoạt động sau cú chạm và tự dừng sau khoảng 1,5 giây.
+     */
+    function playHeartParticleBurst() {
+      const canvas = document.getElementById("heartParticleCanvas");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const width = rect.width;
+      const height = rect.height;
+      const centerX = width / 2;
+      const centerY = height / 2 - 8;
+      const scale = Math.min(width, height) / 440;
+      const duration = 1.45;
+      const startedAt = performance.now();
+      const particles = [];
+      const particleCount = 430;
+
+      function pointOnHeart(t) {
+        return {
+          x: 160 * Math.pow(Math.sin(t), 3),
+          y: 130 * Math.cos(t) - 50 * Math.cos(2 * t)
+             - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t) + 25
+        };
+      }
+
+      // Vẽ một hạt nhỏ có hình trái tim giống file hiệu ứng gốc.
+      const heartStamp = document.createElement("canvas");
+      heartStamp.width = 32;
+      heartStamp.height = 32;
+      const stampCtx = heartStamp.getContext("2d");
+      stampCtx.save();
+      stampCtx.translate(16, 16);
+      stampCtx.beginPath();
+      stampCtx.moveTo(0, 10);
+      stampCtx.bezierCurveTo(-19, -2, -10, -15, 0, -7);
+      stampCtx.bezierCurveTo(10, -15, 19, -2, 0, 10);
+      stampCtx.closePath();
+      stampCtx.fillStyle = "#f7a9c4";
+      stampCtx.shadowColor = "rgba(255,190,215,.9)";
+      stampCtx.shadowBlur = 8;
+      stampCtx.fill();
+      stampCtx.restore();
+
+      for (let i = 0; i < particleCount; i++) {
+        const t = -Math.PI + Math.random() * Math.PI * 2;
+        const p = pointOnHeart(t);
+        const x = p.x * scale;
+        const y = -p.y * scale;
+        const speed = 0.22 + Math.random() * 0.62;
+        particles.push({
+          x: centerX + x,
+          y: centerY + y,
+          vx: x * speed,
+          vy: y * speed,
+          age: Math.random() * 0.16,
+          life: 0.95 + Math.random() * 0.5,
+          size: 5 + Math.random() * 9,
+          rotation: Math.random() * Math.PI * 2,
+          spin: (Math.random() - 0.5) * 2.4
+        });
+      }
+
+      function render(now) {
+        const elapsed = (now - startedAt) / 1000;
+        ctx.clearRect(0, 0, width, height);
+
+        for (const p of particles) {
+          const age = elapsed + p.age;
+          if (age >= p.life) continue;
+
+          const progress = age / p.life;
+          // Lực hút nhẹ về tâm mô phỏng chuyển động hạt trong hiệu ứng gốc.
+          const pull = 0.985;
+          p.vx *= pull;
+          p.vy *= pull;
+          p.x += p.vx * 0.035;
+          p.y += p.vy * 0.035;
+          p.rotation += p.spin * 0.016;
+
+          const alpha = Math.sin(Math.PI * progress) * (1 - progress * 0.35);
+          const size = p.size * (0.65 + progress * 0.55);
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, alpha);
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation);
+          ctx.drawImage(heartStamp, -size / 2, -size / 2, size, size);
+          ctx.restore();
+        }
+
+        if (elapsed < duration) {
+          requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, width, height);
+        }
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    // Chạm ảnh: trái tim hạt xuất hiện, pháo hoa vàng bừng nở, sau đó mở website và phát nhạc.
+    let envelopeOpening = false;
+    function openRoyalEnvelope() {
+      if (envelopeOpening) return;
+      envelopeOpening = true;
+
+      // Phát nhạc ngay trong thao tác chạm để đáp ứng chính sách autoplay của trình duyệt.
       startWeddingMusic();
+      const photoButton = document.getElementById("envelopePhotoButton");
       const modal = document.getElementById("envelopeModal");
-      modal.classList.add("hidden");
+      if (photoButton) {
+        photoButton.disabled = true;
+        photoButton.style.boxShadow = "0 0 0 12px rgba(212,175,55,.16), 0 0 65px rgba(245,229,192,.65)";
+      }
+
+      playHeartParticleBurst();
+      setTimeout(fireGoldenFireworks, 180);
+      setTimeout(() => {
+        if (modal) modal.classList.add("is-closing");
+        // Ẩn hẳn lớp mở đầu sau khi hiệu ứng mờ hoàn tất.
+        setTimeout(() => {
+          if (modal) modal.classList.add("hidden");
+          document.body.classList.remove("overflow-hidden");
+        }, 950);
+      }, 1450);
+    }
+
+    // Giữ hàm tương thích nếu còn thành phần khác gọi đến.
+    function dismissEnvelope() {
+      openRoyalEnvelope();
     }
 
     // Venue Filter Tabs
