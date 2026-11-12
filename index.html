@@ -194,9 +194,9 @@
   <!-- Floating Golden Dust Particle Canvas -->
   <canvas id="goldDustCanvas" class="fixed inset-0 pointer-events-none z-30 transition-opacity duration-700 opacity-80"></canvas>
   <div class="fixed bottom-5 left-5 z-40">
-    <button onclick="toggleGoldDust()" id="dustToggleBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-full border text-xs font-medium shadow-md transition-all cursor-pointer backdrop-blur-md bg-[#FAF8F5]/95 text-[#9B7829] border-[#D4AF37]/60 hover:bg-[#FFFDF9]" title="Bật/Tắt bụi vàng lấp lánh">
-      <span class="text-amber-500">✨</span>
-      <span class="hidden sm:inline" id="dustToggleText">Bụi Vàng: Bật</span>
+    <button onclick="toggleGoldDust()" id="dustToggleBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-full border text-xs font-medium shadow-md transition-all cursor-pointer backdrop-blur-md bg-[#FAF8F5]/95 text-[#9B7829] border-[#D4AF37]/60 hover:bg-[#FFFDF9]" title="Bật/Tắt Trái Tim lấp lánh">
+      <span class="text-amber-500">♥</span>
+      <span class="hidden sm:inline" id="dustToggleText">Trái Tim: Bật</span>
     </button>
   </div>
 
@@ -695,7 +695,7 @@
   <!-- Footer -->
   <footer class="bg-[#17191C] text-[#FAF8F5] py-17 px-4 text-center border-t-2 border-[#D4AF37]">
 
-    <h3 class="font-serif-luxury text-2xl font-normal mt-3 tracking-wide">Quốc Anh &amp; Hải Anh</h3>
+    <h3 class="font-serif-luxury text-2xl font-normal mt-3 tracking-wide">Quốc Anh ♥ Hải Anh</h3>
     <p class="text-xs tracking-widest text-[#D4AF37] mt-1 font-semibold">17 · 12 · 2026</p>
     <div class="mt-4 flex flex-wrap justify-center gap-4 text-xs text-[#E8DFD0]/80">
       <a href="https://maps.app.goo.gl/2u2T7vms2nT7tnmg7?g_st=ic" target="_blank" rel="noopener noreferrer" class="hover:text-[#D4AF37] transition-colors">
@@ -1053,10 +1053,10 @@
       const textEl = document.getElementById('dustToggleText');
       if (dustEnabled) {
         canvasEl.style.opacity = '0.8';
-        textEl.innerText = 'Bụi Vàng: Bật';
+        textEl.innerText = 'Trái Tim: Bật';
       } else {
         canvasEl.style.opacity = '0';
-        textEl.innerText = 'Bụi Vàng: Tắt';
+        textEl.innerText = 'Trái Tim: Tắt';
       }
     }
 
